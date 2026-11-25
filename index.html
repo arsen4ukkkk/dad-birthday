@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>С Днём Рождения, Папа!</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Arial', sans-serif;
+            overflow-x: hidden;
+        }
+
+        /* Экран приветствия */
+        .welcome-screen {
+            text-align: center;
+            color: white;
+            z-index: 20;
+        }
+
+        .welcome-screen h1 {
+            font-size: 2.5em;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .open-btn {
+            background: white;
+            color: #b21f1f;
+            border: none;
+            padding: 20px 40px;
+            font-size: 1.5em;
+            border-radius: 50px;
+            cursor: pointer;
+            animation: pulse 2s infinite;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        /* Основная открытка (скрыта изначально) */
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            max-width: 90%;
+            width: 420px;
+            display: none; /* Скрыто по умолчанию */
+            position: relative;
+            z-index: 10;
+        }
+
+        .card.show {
+            display: block;
+            animation: popIn 0.8s ease-out forwards;
+        }
+
+        h1 { color: #b21f1f; margin-bottom: 10px; font-size: 2em; }
+        p { color: #333; font-size: 1.2em; line-height: 1.6; }
+        .emoji { font-size: 4em; margin: 20px 0; animation: bounce 2s infinite; }
+
+        button {
+            background: #b21f1f;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.2em;
+            border-radius: 50px;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: transform 0.2s;
+        }
+        button:hover { transform: scale(1.05); background: #8b0000; }
+
+        .music-btn {
+            background: #1a2a6c;
+            font-size: 0.9em;
+            padding: 10px 20px;
+            margin-top: 10px;
+        }
+
+        @keyframes popIn { from { transform: scale(0); } to { transform: scale(1); } }
+        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
+
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background-color: #f00;
+            animation: fall linear forwards;
+            z-index: 5;
+        }
+        @keyframes fall { to { transform: translateY(100vh) rotate(720deg); } }
+    </style>
+</head>
+<body>
+
+    <!-- Bohemian Rhapsody -->
+    <audio id="bgMusic" loop>
+        <source src="bohemian_rhapsody.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- Экран приветствия -->
+    <div class="welcome-screen" id="welcomeScreen">
+        <h1>🎁 У меня есть сюрприз!</h1>
+        <button class="open-btn" onclick="openCard()">Открыть открытку</button>
+    </div>
+
+    <!-- Основная открытка -->
+    <div class="card" id="mainCard">
+        <div class="emoji">🎂🎉🎁</div>
+        <h1>Любимый Папа!</h1>
+        <p>Поздравляю тебя с Днём Рождения!<br>
+        Желаю крепкого здоровья, удачи во всём<br>
+        и чтобы каждый день приносил радость.</p>
+        <p><strong>Ты лучший! ❤️</strong></p>
+        
+        <button onclick="launchConfetti()">🎉 Запустить салют!</button>
+        <br>
+        <button class="music-btn" id="musicBtn" onclick="toggleMusic()">⏸ Выключить музыку</button>
+    </div>
+
+    <script>
+        const music = document.getElementById('bgMusic');
+        let isPlaying = false;
+
+        // Открытие открытки + запуск музыки
+        function openCard() {
+            document.getElementById('welcomeScreen').style.display = 'none';
+            document.getElementById('mainCard').classList.add('show');
+            
+            // Пытаемся включить музыку
+            music.play().then(() => {
+                isPlaying = true;
+            }).catch(e => {
+                // Если браузер всё равно заблокировал
+                console.log("Автозапуск заблокирован, нужна кнопка");
+                isPlaying = false;
+                document.getElementById('musicBtn').textContent = '🎵 Включить музыку';
+            });
+        }
+
+        // Управление музыкой
+        function toggleMusic() {
+            if (isPlaying) {
+                music.pause();
+                document.getElementById('musicBtn').textContent = '🎵 Включить музыку';
+            } else {
+                music.play();
+                document.getElementById('musicBtn').textContent = '⏸ Выключить музыку';
+            }
+            isPlaying = !isPlaying;
+        }
+
+        // Конфетти
+        function launchConfetti() {
+            const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff'];
+            for (let i = 0; i < 150; i++) {
+                const confetti = document.createElement('div');
+                confetti.classList.add('confetti');
+                confetti.style.left = Math.random() * 100 + 'vw';
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.animationDuration = (Math.random() * 3 + 2) + 's';
+                confetti.style.top = -10 + 'px';
+                document.body.appendChild(confetti);
+                setTimeout(() => confetti.remove(), 5000);
+            }
+        }
+    </script>
+</body>
+</html>
